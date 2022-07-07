@@ -3,10 +3,10 @@ const { error } = require("console");
 var couchbase = require("couchbase");
 
 async function main() {
-  const clusterConnStr =
-    "couchbases://cb.mnlj-xaty8aqod.cloud.couchbase.com?ssl=no_verify";
-  const username = "sameverything";
-  const password = "Hkhsdjhw232@";
+  const clusterConnStr = "cb.mnlj-xaty8aqod.cloud.couchbase.com";
+  // "couchbases://cb.mnlj-xaty8aqod.cloud.couchbase.com?ssl=no_verify";
+  const username = process.env.username;
+  const password = process.env.password;
   const bucketName = "travel-sample";
   let cluster;
   try {
@@ -21,13 +21,7 @@ async function main() {
     console.log(error);
   }
 
-  const query = `SELECT route.airlineid, airline.name, route.sourceairport, route.destinationairport
-  FROM travel-sample route
-  INNER JOIN travel-sample airline
-  ON route.airlineid = META(airline).id
-  WHERE route.type = "route"
-  AND route.destinationairport = "SFO"
-  ORDER BY route.sourceairport;`;
+  const query = `SELECT route.airlineid FROM `;
   try {
     let result = await cluster.query(query);
     console.log("Result:", result);
