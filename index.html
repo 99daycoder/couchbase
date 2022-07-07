@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix URL for DB</title>
+    <p id="results"></p>
+</head>
+<body>
+    <script>
+        let pr = prompt('Your clusterConnStr ? ')
+        let pr2 = "couchbases://" +pr + "?ssl=no_verify"
+        document.getElementById('results').innerText = pr2
+    </script>
+</body>
+</html>

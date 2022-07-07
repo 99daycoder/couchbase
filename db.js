@@ -1,23 +1,40 @@
 //RUN THIS FILE: node -r dotenv/config db.js
+const { error } = require("console");
 var couchbase = require("couchbase");
 
 async function main() {
-  const clusterConnStr = "cb.mnlj-xaty8aqod.cloud.couchbase.com";
-  const username = process.env.username;
-  const password = process.env.password;
+  const clusterConnStr =
+    "couchbases://cb.mnlj-xaty8aqod.cloud.couchbase.com?ssl=no_verify";
+  const username = "sameverything";
+  const password = "Hkhsdjhw232@";
   const bucketName = "travel-sample";
+  let cluster;
+  try {
+    cluster = await couchbase.connect(clusterConnStr, {
+      username: username,
+      password: password,
+      timeouts: {
+        kvTimeout: 10000, // milliseconds
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
 
-  console.log(clusterConnStr, username, password, bucketName);
-
-  const cluster = await couchbase.connect(clusterConnStr, {
-    username: username,
-    password: password,
-    timeouts: {
-      kvTimeout: 10000, // milliseconds
-    },
-  });
-  console.log("LINE 21");
-  console.log(cluster);
+  const query = `SELECT route.airlineid, airline.name, route.sourceairport, route.destinationairport
+  FROM travel-sample route
+  INNER JOIN travel-sample airline
+  ON route.airlineid = META(airline).id
+  WHERE route.type = "route"
+  AND route.destinationairport = "SFO"
+  ORDER BY route.sourceairport;`;
+  try {
+    let result = await cluster.query(query);
+    console.log("Result:", result);
+    return result;
+  } catch (error) {
+    console.error("Query failed: ", error);
+  }
 
   const bucket = cluster.bucket(bucketName);
 
@@ -39,7 +56,7 @@ async function main() {
   // Load the Document and print it
   // Prints Content and Metadata of the stored Document
   let getResult = await collection.get("michael123");
-  console.log("Get Result: ", getResult);
+  //console.log("Get Result: ", getResult);
 
   // Perform a N1QL Query
   const queryResult = await bucket
@@ -47,9 +64,9 @@ async function main() {
     .query("SELECT name FROM `users` WHERE $1 in interests", {
       parameters: ["Swimming"],
     });
-  console.log("Query Results:");
+  //console.log("Query Results:");
   queryResult.rows.forEach((row) => {
-    console.log(row);
+    //console.log(row);
   });
 }
 
